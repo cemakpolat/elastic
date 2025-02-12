@@ -347,5 +347,156 @@ GET kibana_sample_data_ecommerce_2/_search
   }
 }
 
+
+GET kibana_sample_data_ecommerce_2/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "term": {
+            "category.keyword": "Men's Clothing"
+          }
+        },
+        {
+          "range": {
+            "order_date": {
+              "gte": "2025-01-01",
+              "lte": "2025-12-31"
+            }
+          }
+        }
+      ],
+      "should": [
+        {
+          "term": {
+            "customer_gender.keyword": "MALE"
+          }
+        },
+        {
+          "term": {
+            "customer_id": 38
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "term": {
+            "currency.keyword": "USD"
+          }
+        }
+      ]
+    }
+  }
+}
+GET kibana_sample_data_ecommerce_2/_search
+{
+  "size": 0,
+  "aggs": {
+    "categories": {
+      "terms": {
+        "field": "category.keyword",
+        "size": 10
+      },
+      "aggs": {
+        "manufacturers": {
+          "terms": {
+            "field": "manufacturer.keyword",
+            "size": 5
+          },
+          "aggs": {
+            "total_sales": {
+              "sum": {
+                "field": "taxful_total_price"
+              }
+            },
+            "product_count": {
+              "value_count": {
+                "field": "products.product_id"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+GET kibana_sample_data_ecommerce_2/_search
+{
+  "size": 0,
+  "aggs": {
+    "order_dates": {
+      "date_histogram": {
+        "field": "order_date",
+        "calendar_interval": "day"
+      },
+      "aggs": {
+        "total_sales": {
+          "sum": {
+            "field": "taxful_total_price"
+          }
+        },
+        "manufacturers": {
+          "terms": {
+            "field": "manufacturer.keyword",
+            "size": 5
+          },
+          "aggs": {
+            "sales_per_manufacturer": {
+              "sum": {
+                "field": "taxful_total_price"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+GET kibana_sample_data_ecommerce_2/_search
+{
+  "size": 0,
+  "aggs": {
+    "filtered_categories": {
+      "filter": {
+        "term": {
+          "category.keyword": "Men's Clothing"
+        }
+      },
+      "aggs": {
+        "price_ranges": {
+          "range": {
+            "field": "taxful_total_price",
+            "ranges": [
+              { "to": 20 },
+              { "from": 20, "to": 50 },
+              { "from": 50 }
+            ]
+          },
+          "aggs": {
+            "manufacturer_sales": {
+              "terms": {
+                "field": "manufacturer.keyword",
+                "size": 5
+              },
+              "aggs": {
+                "total_sales": {
+                  "sum": {
+                    "field": "taxful_total_price"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+
 ```
 
