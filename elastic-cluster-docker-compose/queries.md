@@ -1,3 +1,4 @@
+```
 GET _cat/indices
 
 GET kibana_sample_data_ecommerce/_search
@@ -346,5 +347,5 @@ GET kibana_sample_data_ecommerce_2/_search
   }
 }
 
-
+```
 
